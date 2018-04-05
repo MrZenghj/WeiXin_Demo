@@ -7,11 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="wxAuth" />
+        <module name="wxOA" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="WeiXin-Demo" target="1.8" />
       <module name="wxAuth" target="1.8" />
+      <module name="wxOA" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
