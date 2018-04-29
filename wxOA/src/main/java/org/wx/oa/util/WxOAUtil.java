@@ -19,6 +19,12 @@ import org.wx.oa.menu.ViewButton;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class WxOAUtil {
 
@@ -262,5 +268,115 @@ public class WxOAUtil {
         }
         return result;
     }
+
+
+    // 有道智云的appKEY
+    public static final String APPKEY = "4930be6f50097428";
+    public static final String DEFAULT_URL = "http://openapi.youdao.com/api";
+    /**
+     * @Decription 将传入的单词进行翻译
+     *
+     */
+    public static String translateWord(String word){
+        //参数设置
+        String from = "auto"; //文本语言
+        String to = "auto"; //目标语言
+        String salt = String.valueOf(System.currentTimeMillis()); //随机数
+        String sign = md5(APPKEY+salt+"hHcG7lUgOF459lEau9BgKjQymVEdLlrb");
+
+        Map<String,String> map = new HashMap<>();
+        map.put("q",word);
+        map.put("from",from);
+        map.put("to",to);
+        map.put("salt",salt);
+        map.put("sign",sign);
+        map.put("appkey",APPKEY);
+
+        //拼接url
+        String url = null;
+        try {
+            url = realUrl(map);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //请求
+        System.out.println(url);
+        JSONObject jsonObject = doGetJson(url);
+        String result = jsonObject.getString("errorCode");
+        StringBuilder  sb = new StringBuilder();
+        sb.append("查询词汇:"+word+"\n");
+        //返回代码为0表示正确
+        if("0".equals(result)){
+            System.out.println(jsonObject);
+        }
+
+        return "";
+    }
+
+    /**
+     * @description 拼接url
+     * @param map
+     * @return
+     */
+    public static String realUrl(Map<String,String> map) throws UnsupportedEncodingException {
+        if(map == null){
+            return DEFAULT_URL;
+        }
+
+        StringBuilder sb = new StringBuilder(DEFAULT_URL);
+        sb.append("?");
+
+        int i = 0;
+        //遍历key
+        for (String key : map.keySet()) {
+            String value = map.get(key);
+            if(value == null){
+                continue;
+            }
+            if (i != 0) {
+                sb.append('&');
+            }
+            sb.append(key);
+            sb.append("=");
+            sb.append(URLEncoder.encode(value,"UTF-8"));
+            i++;
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 生成32位MD5摘要
+     * @param string
+     * @return
+     */
+    public static String md5(String string) {
+        if(string == null){
+            return null;
+        }
+        char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                'A', 'B', 'C', 'D', 'E', 'F'};
+
+        try{
+            byte[] btInput = string.getBytes("utf-8");
+            /** 获得MD5摘要算法的 MessageDigest 对象 */
+            MessageDigest mdInst = MessageDigest.getInstance("MD5");
+            /** 使用指定的字节更新摘要 */
+            mdInst.update(btInput);
+            /** 获得密文 */
+            byte[] md = mdInst.digest();
+            /** 把密文转换成十六进制的字符串形式 */
+            int j = md.length;
+            char str[] = new char[j * 2];
+            int k = 0;
+            for (byte byte0 : md) {
+                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
+                str[k++] = hexDigits[byte0 & 0xf];
+            }
+            return new String(str);
+        }catch(NoSuchAlgorithmException | UnsupportedEncodingException e){
+            return null;
+        }
+    }
+
 
 }

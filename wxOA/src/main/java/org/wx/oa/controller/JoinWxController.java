@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.wx.oa.entity.TextMessage;
 import org.wx.oa.util.CheckUtil;
 import org.wx.oa.util.MessageUtil;
+import org.wx.oa.util.WxOAUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +70,10 @@ public class JoinWxController {
                     message = MessageUtil.initNewsMessage(toUserName,fromUserName);
                 }else if("4".equals(content)){ //4 回复的内容（图片）
                     message = MessageUtil.initPictureMessage(toUserName,fromUserName,null);
+                }else if("翻译".startsWith(content)) {
+                    String word = content.replace("翻译", "").trim();
+                    System.out.println(word);
+                    message = MessageUtil.initText(toUserName, fromUserName, WxOAUtil.translateWord(word));
                 }else if("?".equals(content) || "？".equals(content)){ //? 回复的内容
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
                 }
