@@ -11,6 +11,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.wx.oa.entity.AccessToken;
+import org.wx.oa.entity.trans.TransResult;
 import org.wx.oa.menu.Button;
 import org.wx.oa.menu.ClickButton;
 import org.wx.oa.menu.Menu;
@@ -275,14 +276,13 @@ public class WxOAUtil {
     public static final String DEFAULT_URL = "http://openapi.youdao.com/api";
     /**
      * @Decription 将传入的单词进行翻译
-     *
      */
     public static String translateWord(String word){
         //参数设置
         String from = "auto"; //文本语言
         String to = "auto"; //目标语言
         String salt = String.valueOf(System.currentTimeMillis()); //随机数
-        String sign = md5(APPKEY+salt+"hHcG7lUgOF459lEau9BgKjQymVEdLlrb");
+        String sign = md5(APPKEY + word + salt + "K0GtVukGk0u2JxI7Ctfch3z4boxVAQGC");
 
         Map<String,String> map = new HashMap<>();
         map.put("q",word);
@@ -290,7 +290,7 @@ public class WxOAUtil {
         map.put("to",to);
         map.put("salt",salt);
         map.put("sign",sign);
-        map.put("appkey",APPKEY);
+        map.put("appKey",APPKEY);
 
         //拼接url
         String url = null;
@@ -308,9 +308,17 @@ public class WxOAUtil {
         //返回代码为0表示正确
         if("0".equals(result)){
             System.out.println(jsonObject);
+            TransResult transResult = (TransResult)JSONObject.toBean(jsonObject,TransResult.class);
+            //可自行做相应的格式输出 以及对应业务判断
+            //sb.append(transResult.toString());
+            String[] traslations = transResult.getTranslation();
+            sb.append("词义: ");
+            for (String t : traslations) {
+                sb.append(t + " ");
+            }
+            sb.append("\n");
         }
-
-        return "";
+        return sb.toString();
     }
 
     /**

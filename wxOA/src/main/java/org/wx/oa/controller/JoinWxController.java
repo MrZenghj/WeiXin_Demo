@@ -70,9 +70,8 @@ public class JoinWxController {
                     message = MessageUtil.initNewsMessage(toUserName,fromUserName);
                 }else if("4".equals(content)){ //4 回复的内容（图片）
                     message = MessageUtil.initPictureMessage(toUserName,fromUserName,null);
-                }else if("翻译".startsWith(content)) {
+                }else if(content.startsWith("翻译")) {
                     String word = content.replace("翻译", "").trim();
-                    System.out.println(word);
                     message = MessageUtil.initText(toUserName, fromUserName, WxOAUtil.translateWord(word));
                 }else if("?".equals(content) || "？".equals(content)){ //? 回复的内容
                     message = MessageUtil.initText(toUserName,fromUserName,MessageUtil.menuText());
